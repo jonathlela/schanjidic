@@ -51,14 +51,14 @@
     index-oneill-name
     korean
     pinyin
-    cross-reference-nelson
-    cross-reference-jis
-    cross-reference-deroo
-    cross-reference-oneill
-    cross-reference-halpern
-    cross-reference-spahn1
-    cross-reference-spahn2
-    misclassification
+    cross-reference
+    cross-reference-jis-208
+    cross-reference-jis-212
+    cross-reference-jis-213
+    misclassification-pp
+    misclassification-sp
+    misclassification-bp
+    misclassification-rp
     on
     kun
     nanori
@@ -129,19 +129,76 @@ is quite imprecise.")
     (korean . "Y")
     (pinyin . "W")
     (cross-reference . "X")
-    (missclassification-pp "ZPP")
-    (misclassification-sp "ZSP")
-    (misclassification-bp "ZBP")
-    (misclassification-rp "ZRP")
-    (cross-reference . "X")
-    (cross-reference-jis0 "XJ0")
-    (cross-reference-jis1 "XJ1")
-    (cross-reference-jis2 "XJ2")
+    (cross-reference-jis-208 . "XJ0")
+    (cross-reference-jis-212 . "XJ1")
+    (cross-reference-jis-213 . "XJ2")
+    (misclassification-pp . "ZPP")
+    (misclassification-sp . "ZSP")
+    (misclassification-bp . "ZBP")
+    (misclassification-rp . "ZRP")
     )
   )
 
-(define info-match `(
-		     (unicode . ,(make-regexp "^U([A-Fa-f0-9]+)"))
+(define info-value
+  `(
+    (unicode . "[A-Fa-f0-9]+")
+    (radical . "[0-9]+")
+    (historical-radical . "[0-9]+")
+    (frequency . "[0-9]+")
+    (grade . "[0-9]+")
+    (jlpt . "[0-9]+")
+    (index-halpern . "[0-9]+")
+    (index-nelson . "[0-9]+")
+    (index-haig . "[0-9]+")
+    (index-ajlt  . "[0-9]+")
+    (index-crowley . "[0-9]+")
+    (index-hodges . "[0-9]+")
+    (index-kondansha . "[0-9]+")
+    (index-henshall-3 . "[0-9]+")
+    (index-nishiguchi . "[0-9]+")
+    (index-learner . "[0-9]+")
+    (index-heisig-fr . "[0-9]+")
+    (index-oneill . "[0-9]+")
+    (index-deroo . "[0-9]+")
+    (index-sakade . "[0-9]+")
+    (index-kask . "[0-9]+")
+    (skip . "[0-9]+-[0-9]+-[0-9]+")
+    (strokes . "[0-9]+")
+    (index-spahn-1 . "[A-Za-z0-9]+\\.[0-9]+")
+    (index-spahn-2 . "[0-9]+")
+    (four-corner . "[0-9]{4}\\.[0-9]")
+    (index-morohashi . "[0-9]+")
+    (page-morohashi . "[0-9.]+")
+    (index-henshall . "[0-9]+")
+    (index-gakken . "[0-9A]+")
+    (index-heisig . "[0-9]+")
+    (index-oneill-name . "[0-9]+")
+    (korean . "[A-Za-z0-9]+")
+    (pinyin . "[A-Za-z]+")
+    (cross-reference . "[^J][A-Za-z0-9.]+")
+    (cross-reference-jis-208 . "[A-Fa-f0-9]{4}")
+    (cross-reference-jis-212 . "[A-Fa-f0-9]{4}")
+    (cross-reference-jis-213 . "[A-Fa-f0-9]{4}")
+    (misclassification-pp . "[0-9]+-[0-9]+-[0-9]+")
+    (misclassification-sp . "[0-9]+-[0-9]+-[0-9]+")
+    (misclassification-bp . "[0-9]+-[0-9]+-[0-9]+")
+    (misclassification-rp . "[0-9]+-[0-9]+-[0-9]+")
+    )
+)
+
+(define info-match
+  (map 
+   (lambda (predicate value)
+     (let* ((key (car predicate))
+	   (pred (cdr predicate))
+	   (val (cdr value))
+	   (regexp (make-regexp (string-append "^" pred "(" val ")"))))
+       `(,key . ,regexp)))
+    info-predicate info-value))
+
+(define info-match2
+  `(
+    (unicode . ,(make-regexp (string-append "^" (assq-ref info-predicate 'unicode) "([A-Fa-f0-9]+)")))
 		     (radical . ,(make-regexp "^B([0-9]+)"))
 		     (historical-radical . ,(make-regexp "^C([0-9]+)"))
 		     (frequency . ,(make-regexp "^F([0-9]+)"))
@@ -202,7 +259,7 @@ is quite imprecise.")
 (define update-field 
   (lambda (entry field value)
     (case field
-	((cross-reference-nelson cross-reference-jis cross-reference-deroo cross-reference-oneill crossreference-halpern cross-reference-spahn1 cross-reference-spahn2 korean pinyin misclassification on kun nanori english)
+	((cross-reference cross-reference-jis-208 cross-reference-jis-212 cross-reference-jis-213 korean pinyin misclassification on kun nanori english)
 	 (begin
 	 (if (not (kanji entry field))
 	     (set! (kanji entry field) (list value))
@@ -272,13 +329,19 @@ is quite imprecise.")
       (set! (kanji default-kanji 'jis) (read-field line cursor))
       (set! cursor (get-new-token cursor find-next-token line))
       (while is_information?
-	(let ((field (guess-info-field (read-field line cursor))))
-	  (if (not field)
+	(let* ((field (read-field line cursor))
+	       (info-field (guess-info-field field)))
+	  (if (not info-field)
 	      (set! is_information? #f)
-	      (begin
-		(update-field default-kanji (car field) (match:substring (regexp-exec (cdr field) (read-field line cursor)) 1))
-		(set! cursor (get-new-token cursor find-next-token
-					    line))))))
+	      (let ((info-value
+		     (match:substring (regexp-exec (cdr info-field) field) 1)))
+		(if (eq? (car info-field) 'cross-reference)
+		    (let* ((cross-field (guess-info-field info-value))
+			   (cross-value
+			    (match:substring (regexp-exec (cdr cross-field) info-value) 1)))
+		      (update-field default-kanji (car info-field) `(,(car cross-field) . ,cross-value)))
+		    (update-field default-kanji (car info-field) info-value))
+		(set! cursor (get-new-token cursor find-next-token line))))))
       (while is_reading?
 	(let ((field (read-field line cursor)))
 	(match field
@@ -377,4 +440,4 @@ is quite imprecise.")
 	    (set! line (read-line dict))))))))
 
 (make-dict)
-(test)
+;;(test)
