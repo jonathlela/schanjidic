@@ -1,0 +1,2 @@
+= schanjidic
+schanjidic is an application to query kanji information from kanjidic written in Guile scheme.
