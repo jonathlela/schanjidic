@@ -67,6 +67,65 @@
     )
   )
 
+(define attributes-type
+  '(
+    (kanji . char)
+    (jis . string)
+    (unicode . string)
+    (radical . string)
+    (historical-radical . string)
+    (frequency . string)
+    (grade . string)
+    (jlpt . string)
+    (index-halpern . string)
+    (index-nelson . string)
+    (index-haig . string)
+    (index-ajlt  . string)
+    (index-crowley . string)
+    (index-hodges . string)
+    (index-kondansha . string)
+    (index-henshall-3 . string)
+    (index-nishiguchi . string)
+    (index-learner . string)
+    (index-heisig-fr . string)
+    (index-oneill . string)
+    (index-deroo . string)
+    (index-sakade . string)
+    (index-kask . string)
+    (skip . string)
+    (strokes . string)
+    (index-spahn-1 . string)
+    (index-spahn-2 . string)
+    (four-corner . string)
+    (index-morohashi . string)
+    (page-morohashi . string)
+    (index-henshall . string)
+    (index-gakken . string)
+    (index-heisig . string)
+    (index-oneill-name . string)
+    (korean . list)
+    (pinyin . list)
+    (cross-reference . list)
+    (cross-reference-jis-208 . list)
+    (cross-reference-jis-212 . list)
+    (cross-reference-jis-213 . list)
+    (misclassification-pp . list)
+    (misclassification-sp . list)
+    (misclassification-bp . list)
+    (misclassification-rp . list)
+    (on . list)
+    (kun . list)
+    (nanori . list)
+    (radical-name . string)
+    (english . list)
+    )
+  )
+
+(define list-attributes
+  (filter 
+   (lambda (x) (eq? (cdr (assoc x attributes-type)) 'list))
+   kanji-attributes))
+
 (define attributes-description
 '(
   (kanji . "the kanji itself")
@@ -91,6 +150,53 @@ b. the relative frequencies for the last few hundred kanji so graded
 is quite imprecise.")
   )
 )
+
+(define info
+  '(
+    unicode
+    radical
+    historical-radical
+    frequency
+    grade
+    jlpt
+    index-halpern
+    index-nelson
+    index-haig
+    index-ajlt
+    index-crowley
+    index-hodges
+    index-kondansha
+    index-henshall-3
+    index-nishiguchi
+    index-learner
+    index-heisig-fr
+    index-oneill
+    index-deroo
+    index-sakade
+    index-kask
+    skip
+    strokes
+    index-spahn-1
+    index-spahn-2
+    four-corner
+    index-morohashi
+    page-morohashi
+    index-henshall
+    index-gakken
+    index-heisig
+    index-oneill-name
+    korean
+    pinyin
+    cross-reference
+    cross-reference-jis-208
+    cross-reference-jis-212
+    cross-reference-jis-213
+    misclassification-pp
+    misclassification-sp
+    misclassification-bp
+    misclassification-rp
+    )
+  )
 
 (define info-predicate 
   '(
@@ -196,56 +302,6 @@ is quite imprecise.")
        `(,key . ,regexp)))
     info-predicate info-value))
 
-(define info-match2
-  `(
-    (unicode . ,(make-regexp (string-append "^" (assq-ref info-predicate 'unicode) "([A-Fa-f0-9]+)")))
-		     (radical . ,(make-regexp "^B([0-9]+)"))
-		     (historical-radical . ,(make-regexp "^C([0-9]+)"))
-		     (frequency . ,(make-regexp "^F([0-9]+)"))
-		     (grade . ,(make-regexp "^G([0-9]+)"))
-		     (jlpt . ,(make-regexp "^J([0-9]+)"))
-		     (index-halpern . ,(make-regexp "^H([0-9]+)"))
-		     (index-nelson . ,(make-regexp "^N([0-9]+)"))
-		     (index-haig . ,(make-regexp "^V([0-9]+)"))
-		     (index-ajlt  . ,(make-regexp "^DB([0-9]+)"))
-		     (index-crowley . ,(make-regexp "^DC([0-9]+)"))
-		     (index-hodges . ,(make-regexp "^DF([0-9]+)"))
-		     (index-kondansha . ,(make-regexp "^DG([0-9]+)"))
-		     (index-henshall-3 . ,(make-regexp "^DH([0-9]+)"))
-		     (index-nishiguchi . ,(make-regexp "^DJ([0-9]+)"))
-		     (index-learner . ,(make-regexp "^DK([0-9]+)"))
-		     (index-heisig-fr . ,(make-regexp "^DM([0-9]+)"))
-		     (index-oneill . ,(make-regexp "^DO([0-9]+)"))
-		     (index-deroo . ,(make-regexp "^DR([0-9]+)"))
-		     (index-sakade . ,(make-regexp "^DS([0-9]+)"))
-		     (index-kask . ,(make-regexp "^DT([0-9]+)"))
-		     (skip . ,(make-regexp "^P([0-9]+-[0-9]+-[0-9]+)"))
-		     (strokes . ,(make-regexp "^S([0-9]+)"))
-		     (index-spahn-1 . ,(make-regexp "^I([A-Za-z0-9]+\\.[0-9]+)"))
-		     (index-spahn-2 . ,(make-regexp "^IN([0-9]+)"))
-		     (four-corner . ,(make-regexp "^Q([0-9]{4}\\.[0-9])"))
-		     (index-morohashi . ,(make-regexp "^MN([0-9]+)"))
-		     (page-morohashi . ,(make-regexp "^MP([0-9.]+)"))
-		     (index-henshall . ,(make-regexp "^E([0-9]+)"))
-		     (index-gakken . ,(make-regexp "^K([0-9A]+)"))
-		     (index-heisig . ,(make-regexp "^L([0-9]+)"))
-		     (index-oneill-name . ,(make-regexp "^O([0-9]+)"))
-		     (korean . ,(make-regexp "^Y([A-Za-z0-9]+)"))
-		     (pinyin . ,(make-regexp "^W([A-Za-z]+)"))
-		     (cross-reference-nelson . ,(make-regexp "^XN([0-9]+)"))
-		     (cross-reference-jis . ,(make-regexp
-					      "^XJ[012]([A-Fa-f0-9]+)"))
-		     (cross-reference-deroo . ,(make-regexp
-					      "^XDR([0-9]+)"))
-		     (cross-reference-oneill . ,(make-regexp
-					      "^XO([0-9]+)"))
-		     (cross-reference-halpern . ,(make-regexp
-					      "^XH([0-9]+)"))
-		     (cross-reference-spahn1  . ,(make-regexp "^XI([A-Za-z0-9]+\\.[0-9]+)"))
-		     (cross-reference-spahn2  . ,(make-regexp "^XIN([0-9]+)"))
-		     (misclassification . ,(make-regexp "^Z[PBRS]+([0-9]+-[0-9]+-[0-9]+)"))
-		     )
-  )
 
 (define kanji-entry (make-record-type "kanji-entry" kanji-attributes))
 
@@ -258,8 +314,8 @@ is quite imprecise.")
 
 (define update-field 
   (lambda (entry field value)
-    (case field
-	((cross-reference cross-reference-jis-208 cross-reference-jis-212 cross-reference-jis-213 korean pinyin misclassification on kun nanori english)
+    (match field
+	((? (lambda (symbol) (member symbol list-attributes)) _)
 	 (begin
 	 (if (not (kanji entry field))
 	     (set! (kanji entry field) (list value))
@@ -415,17 +471,45 @@ is quite imprecise.")
 
 (define kanji-entry->line
   (lambda (curr_kanji)
-    (display curr_kanji)
     (call-with-output-string
      (lambda (port)
+       (let ((has-nanori #f)
+	     (has-radical #f))
       (for-each 
        (lambda (field)
-	 (case field
-	   ((kanji)
-	    (write-char (kanji curr_kanji 'kanji) port)(display " "))
-	   ;;(cross-reference-nelson cross-reference-jis cross-reference-deroo cross-reference-oneill crossreference-halpern cross-reference-spahn1 cross-reference-spahn2 korean pinyin misclassification on kun nanori)
-	   (else (display " " port))))
-       (record-type-fields kanji-entry))))))
+	 (match field
+	   ('kanji
+	    (write-char (kanji curr_kanji field) port)(display " " port))
+	   ('jis
+	    (display (kanji curr_kanji field) port)(display " " port))
+	   ((? (lambda (symbol) (member symbol info)) _)
+	    (let ((field-value (kanji curr_kanji field)))
+	      (if field-value
+		  (begin
+		    (if (eq? field 'cross-reference)
+			(for-each 
+			 (lambda (field)
+			   (let ((field-value (cdr field)))
+			     (display (string-append (cdr (assoc (car field) info-predicate)) field-value) port) (display " " port)))
+			field-value)
+			(if (member field list-attributes) 
+			    (begin (display (substring (string-join field-value (string-append " " (cdr (assoc field info-predicate))) 'prefix) 1) port)(display " " port))
+		    (begin (display (string-append (cdr (assoc field info-predicate)) field-value) port) (display " " port))))))))
+	   ('english
+	    (begin (display (string-append "{" (string-join (kanji curr_kanji field) "} {") "}") port)(display " " port)))
+	   (else
+	    (let ((field-value (kanji curr_kanji field)))
+	      (if field-value
+	      (if (member field list-attributes)
+		  (begin 
+		    (if (eq? field 'nanori) 
+			(if (not has-nanori) (begin (display "T1 " port) (set! has-nanori #t)))
+			(if (eq? field 'radical)
+			    (if (not has-radical) (begin (display "T2 " port) (set! has-radical #t)))))
+		    (display (string-join field-value " ") port))
+		  (display field-value port))
+	      (display " " port))))))
+       (record-type-fields kanji-entry)))))))
 
 (define test
   (lambda ()
@@ -440,4 +524,4 @@ is quite imprecise.")
 	    (set! line (read-line dict))))))))
 
 (make-dict)
-;;(test)
+(test)
