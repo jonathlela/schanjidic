@@ -1,4 +1,16 @@
 ;;# -*- encoding: utf-8 -*-
+
+(define-module (scm schanjidic)
+  #:export (
+	    open-dict
+	    make-dict
+	    kanji-entry
+	    kanji
+	    info
+	    info-predicate 
+	    list-attributes
+	    ))
+
 (use-modules (ice-9 rdelim))
 (use-modules (ice-9 regex))
 (use-modules (ice-9 match))
@@ -6,11 +18,17 @@
 (setlocale LC_ALL "")
 
 (define hiragana
-  (string->char-set "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ")
+  (string->char-set 
+   "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづ\
+てでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれ\
+ろゎわゐゑをんゔゕゖ")
   )
 
 (define katakana
-  (string->char-set "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹー")
+  (string->char-set 
+   "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅ\
+テデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレ\
+ロヮワヰヱヲンヴヵヶヷヸヹー")
   )
 
 (define kanji-attributes 
@@ -127,17 +145,17 @@
    kanji-attributes))
 
 (define attributes-description
-'(
-  (kanji . "the kanji itself")
-  (jis . "the 4-byte ASCII representation of the hexadecimal coding of
+  '(
+    (kanji . "the kanji itself")
+    (jis . "the 4-byte ASCII representation of the hexadecimal coding of
 the two-byte JIS encoding")
-  (unicode . "the Unicode encoding of the kanji")
-  (radical . "the radical (Bushu) number. As far as possible, this is
+    (unicode . "the Unicode encoding of the kanji")
+    (radical . "the radical (Bushu) number. As far as possible, this is
 the radical number used in the Nelson \"Modern Japanese-English
 Character Dictionary\" (i.e. the Classic, not the New Nelson)")
-  (historical-radical . "the historical or classical radical number,
+    (historical-radical . "the historical or classical radical number,
 as recorded in the KangXi Zidian")
-  (frequency . "the frequency-of-use ranking. AThe 2,501
+    (frequency . "the frequency-of-use ranking. AThe 2,501
 most-used characters have a ranking; those characters that lack this
 field are not ranked. The frequency is a number from 1 to 2,501 that
 expresses the relative frequency of occurrence of a character in modern
@@ -148,8 +166,8 @@ a. these frequencies are biassed towards words and kanji used in
 newspaper articles,
 b. the relative frequencies for the last few hundred kanji so graded
 is quite imprecise.")
+    )
   )
-)
 
 (define info
   '(
@@ -290,17 +308,17 @@ is quite imprecise.")
     (misclassification-bp . "[0-9]+-[0-9]+-[0-9]+")
     (misclassification-rp . "[0-9]+-[0-9]+-[0-9]+")
     )
-)
+  )
 
 (define info-match
   (map 
    (lambda (predicate value)
      (let* ((key (car predicate))
-	   (pred (cdr predicate))
-	   (val (cdr value))
-	   (regexp (make-regexp (string-append "^" pred "(" val ")"))))
+	    (pred (cdr predicate))
+	    (val (cdr value))
+	    (regexp (make-regexp (string-append "^" pred "(" val ")"))))
        `(,key . ,regexp)))
-    info-predicate info-value))
+   info-predicate info-value))
 
 
 (define kanji-entry (make-record-type "kanji-entry" kanji-attributes))
@@ -308,24 +326,27 @@ is quite imprecise.")
 (define new-kanji-entry (record-constructor kanji-entry))
 
 (define kanji (make-procedure-with-setter
-	       (lambda (entry attribute) ((record-accessor kanji-entry attribute) entry))
-	       (lambda (entry attribute value) ((record-modifier kanji-entry attribute) entry value))
-))
+	       (lambda (entry attribute) 
+		 ((record-accessor kanji-entry attribute) entry))
+	       (lambda (entry attribute value)
+		 ((record-modifier kanji-entry attribute) entry value))
+	       ))
 
 (define update-field 
   (lambda (entry field value)
     (match field
-	((? (lambda (symbol) (member symbol list-attributes)) _)
-	 (begin
+      ((? (lambda (symbol) (member symbol list-attributes)) _)
+       (begin
 	 (if (not (kanji entry field))
 	     (set! (kanji entry field) (list value))
 	     (set! (kanji entry field) (cons value (kanji entry field))))))
-	(else 
-	 (set! (kanji entry field) value)))))
+      (else 
+       (set! (kanji entry field) value)))))
 
-(define false-kanji (lambda () (apply new-kanji-entry (map (lambda (field) #f) (record-type-fields kanji-entry)))))
-
-(define kanjidic (make-hash-table 6355))
+(define false-kanji 
+  (lambda () 
+    (apply new-kanji-entry 
+	   (map (lambda (field) #f) (record-type-fields kanji-entry)))))
 
 (define block-regexp
   (make-regexp "^\\{([^}]*)\\}")
@@ -341,7 +362,7 @@ is quite imprecise.")
 (define get-new-token 
   (lambda (cursor findex str)
     (let* ((new_start (+ (cdr cursor) 1))
-	  (new_end (findex (substring str new_start))))
+	   (new_end (findex (substring str new_start))))
       (if new_end
 	  (cons	new_start (+ new_start new_end))
 	  #f))))
@@ -380,7 +401,8 @@ is quite imprecise.")
 	  (is_radical? #f)
 	  (has_meaning? #t))
       (set! cursor (get-new-token cursor find-next-token line))
-      (set! (kanji default-kanji 'kanji) (string-ref (read-field line cursor) 0))
+      (set! (kanji default-kanji 'kanji) 
+	    (string-ref (read-field line cursor) 0))
       (set! cursor (get-new-token cursor find-next-token line))
       (set! (kanji default-kanji 'jis) (read-field line cursor))
       (set! cursor (get-new-token cursor find-next-token line))
@@ -394,36 +416,41 @@ is quite imprecise.")
 		(if (eq? (car info-field) 'cross-reference)
 		    (let* ((cross-field (guess-info-field info-value))
 			   (cross-value
-			    (match:substring (regexp-exec (cdr cross-field) info-value) 1)))
-		      (update-field default-kanji (car info-field) `(,(car cross-field) . ,cross-value)))
+			    (match:substring 
+			     (regexp-exec (cdr cross-field) info-value) 
+			     1)))
+		      (update-field
+		       default-kanji 
+		       (car info-field) 
+		       `(,(car cross-field) . ,cross-value)))
 		    (update-field default-kanji (car info-field) info-value))
 		(set! cursor (get-new-token cursor find-next-token line))))))
       (while is_reading?
 	(let ((field (read-field line cursor)))
-	(match field
-	  ((? is-hiragana? _)   
-	    (begin
+	  (match field
+	    ((? is-hiragana? _)   
+	     (begin
 	       (update-field default-kanji 'on field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
-	  ((? is-katakana? _)
-	    (begin
+	    ((? is-katakana? _)
+	     (begin
 	       (update-field default-kanji 'kun field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
-	  ("T1" 
-	   (begin
-	     (set! cursor (get-new-token cursor find-next-token
+	    ("T1" 
+	     (begin
+	       (set! cursor (get-new-token cursor find-next-token
 					   line))	     
-	     (set! has_nanori? #t)
-	     (set! is_reading? #f)))
-	  ("T2"
-	   (begin
+	       (set! has_nanori? #t)
+	       (set! is_reading? #f)))
+	    ("T2"
+	     (begin
 	       (set! cursor (get-new-token cursor find-next-token
 					   line)) 
 	       (set! is_radical? #t)
 	       (set! is_reading? #f)))
-	  (_ (set! is_reading? #f)))))
+	    (_ (set! is_reading? #f)))))
       (while has_nanori?
 	(let ((field (read-field line cursor)))
 	  (match field
@@ -458,85 +485,20 @@ is quite imprecise.")
 	      (set! has_meaning? #f))))
       default-kanji)))
 
-(define make-dict
-  (lambda () 
-    (let ((dict (open-input-file "/usr/share/edict/kanjidic")))
+(define open-dict
+  (lambda(file)
+    (let ((dict (open-input-file file)))
       (set-port-encoding! dict "EUC-JP")
       (read-line dict)
+      dict)))
+
+(define make-dict
+  (lambda (file) 
+    (let ((dict (open-dict file))
+	  (kanjidic (make-hash-table 6355)))
       (let ((line (read-line dict)))
 	(while (not (eof-object? line))
 	  (let ((entry (kanji-from-kanjidict line)))
 	    (hashq-create-handle! kanjidic (kanji entry 'kanji) entry)
-	    (set! line (read-line dict))))))))
-
-(define kanji-entry->line
-  (lambda (curr_kanji)
-    (call-with-output-string
-     (lambda (port)
-       (let ((has-nanori #f)
-	     (has-radical #f))
-      (for-each 
-       (lambda (field)
-	 (match field
-	   ('kanji
-	    (write-char (kanji curr_kanji field) port)(display " " port))
-	   ('jis
-	    (display (kanji curr_kanji field) port)(display " " port))
-	   ((? (lambda (symbol) (member symbol info)) _)
-	    (let ((field-value (kanji curr_kanji field)))
-	      (if field-value
-		  (begin
-		    (if (eq? field 'cross-reference)
-			(for-each 
-			 (lambda (field-cross)
-			   (let ((field-cross-value (cdr field-cross)))
-			     (display (string-append (cdr (assoc field info-predicate)) (cdr (assoc (car field-cross) info-predicate)) field-cross-value) port) (display " " port)))
-			field-value)
-			(if (member field list-attributes) 
-			    (begin (display (substring (string-join field-value (string-append " " (cdr (assoc field info-predicate))) 'prefix) 1) port)(display " " port))
-		    (begin (display (string-append (cdr (assoc field info-predicate)) field-value) port) (display " " port))))))))
-	   ('english
-	    (begin (display (string-append "{" (string-join (kanji curr_kanji field) "} {") "}") port)(display " " port)))
-	   (else
-	    (let ((field-value (kanji curr_kanji field)))
-	      (if field-value
-	      (if (member field list-attributes)
-		  (begin 
-		    (if (eq? field 'nanori) 
-			(if (not has-nanori) (begin (display "T1 " port) (set! has-nanori #t)))
-			(if (eq? field 'radical-name)
-			    (if (not has-radical) (begin (display "T2 " port) (set! has-radical #t)))))
-		    (display (string-append (string-join field-value " ") " ") port))
-		  (display field-value port)))))))
-       (record-type-fields kanji-entry)))))))
-
-(define unbelievable-cheksum
-  (lambda (str)
-    (let ((i 0))
-    (string-for-each
-     (lambda (ch) (set! i (+ (char->integer ch) i)))
-     str)
-    i)))
-
-(define compare-entry
-  (lambda (a b)
-    (if (eq? (string-length a) (string-length b))
-	(eq? (unbelievable-cheksum a) (unbelievable-cheksum b))
-	#f)))
-
-(define test
-  (lambda ()
-    (let ((dict (open-input-file "/usr/share/edict/kanjidic")))
-      (set-port-encoding! dict "EUC-JP")
-      (read-line dict)
-      (let ((line (read-line dict)))
-	(while (not (eof-object? line))
-	  (let* ((entry (string-ref line 0))
-		 (r_entry (kanji-entry->line (hashq-ref kanjidic entry))))
-	    (display line)(newline)
-	    (display r_entry)(newline)
-	    (display (compare-entry line r_entry))(newline)
-	    (set! line (read-line dict))))))))
-
-(make-dict)
-(test)
+	    (set! line (read-line dict)))))
+      kanjidic)))
