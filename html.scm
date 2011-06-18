@@ -1,0 +1,13 @@
+(use-modules (ice-9 rdelim))
+;;(use-modules (ice-9 eval-string))
+(setlocale LC_ALL "")
+
+(let ((s (socket PF_INET SOCK_STREAM 0)))
+  (connect s AF_INET (inet-pton AF_INET "127.0.0.1") 47532)
+  (display "looking for 魔")
+  (newline)
+  (display "魔\n" s)
+  (let ((res (read-line s)))
+    (display res)
+    (newline)
+    (eval-string (string-append "'" res))))

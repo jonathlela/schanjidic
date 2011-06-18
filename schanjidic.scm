@@ -1,9 +1,8 @@
-;;# -*- encoding: utf-8 -*-
-
 (define-module (scm schanjidic)
   #:export (
 	    open-dict
 	    make-dict
+	    look-kanji
 	    info-predicate
 	    ))
 (use-modules (scm kanjifields))
@@ -300,3 +299,7 @@
 	    (hashq-create-handle! kanjidic (kanji entry 'kanji) entry)
 	    (set! line (read-line dict)))))
       kanjidic)))
+
+(define look-kanji
+  (lambda (entry kanjidic)
+    (hashq-ref kanjidic entry)))
