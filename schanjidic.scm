@@ -4,13 +4,11 @@
   #:export (
 	    open-dict
 	    make-dict
-	    kanji-entry
-	    kanji
-	    info
-	    info-predicate 
-	    list-attributes
+	    info-predicate
 	    ))
-
+(use-modules (scm kanjifields))
+;;(use-modules (scm records))
+(use-modules (scm alists))
 (use-modules (ice-9 rdelim))
 (use-modules (ice-9 regex))
 (use-modules (ice-9 match))
@@ -31,190 +29,6 @@
 ロヮワヰヱヲンヴヵヶヷヸヹー")
   )
 
-(define kanji-attributes 
-  '(
-    kanji
-    jis
-    unicode
-    radical
-    historical-radical
-    frequency
-    grade
-    jlpt
-    index-halpern
-    index-nelson
-    index-haig
-    index-ajlt
-    index-crowley
-    index-hodges
-    index-kondansha
-    index-henshall-3
-    index-nishiguchi
-    index-learner
-    index-heisig-fr
-    index-oneill
-    index-deroo
-    index-sakade
-    index-kask
-    skip
-    strokes
-    index-spahn-1
-    index-spahn-2
-    four-corner
-    index-morohashi
-    page-morohashi
-    index-henshall
-    index-gakken
-    index-heisig
-    index-oneill-name
-    korean
-    pinyin
-    cross-reference
-    cross-reference-jis-208
-    cross-reference-jis-212
-    cross-reference-jis-213
-    misclassification-pp
-    misclassification-sp
-    misclassification-bp
-    misclassification-rp
-    on
-    kun
-    nanori
-    radical-name
-    english
-    )
-  )
-
-(define attributes-type
-  '(
-    (kanji . char)
-    (jis . string)
-    (unicode . string)
-    (radical . string)
-    (historical-radical . string)
-    (frequency . string)
-    (grade . string)
-    (jlpt . string)
-    (index-halpern . string)
-    (index-nelson . string)
-    (index-haig . string)
-    (index-ajlt  . string)
-    (index-crowley . string)
-    (index-hodges . string)
-    (index-kondansha . string)
-    (index-henshall-3 . string)
-    (index-nishiguchi . string)
-    (index-learner . string)
-    (index-heisig-fr . string)
-    (index-oneill . string)
-    (index-deroo . string)
-    (index-sakade . string)
-    (index-kask . string)
-    (skip . string)
-    (strokes . list)
-    (index-spahn-1 . string)
-    (index-spahn-2 . string)
-    (four-corner . list)
-    (index-morohashi . string)
-    (page-morohashi . string)
-    (index-henshall . string)
-    (index-gakken . string)
-    (index-heisig . string)
-    (index-oneill-name . list)
-    (korean . list)
-    (pinyin . list)
-    (cross-reference . list)
-    (cross-reference-jis-208 . list)
-    (cross-reference-jis-212 . list)
-    (cross-reference-jis-213 . list)
-    (misclassification-pp . list)
-    (misclassification-sp . list)
-    (misclassification-bp . list)
-    (misclassification-rp . list)
-    (on . list)
-    (kun . list)
-    (nanori . list)
-    (radical-name . list)
-    (english . list)
-    )
-  )
-
-(define list-attributes
-  (filter 
-   (lambda (x) (eq? (cdr (assoc x attributes-type)) 'list))
-   kanji-attributes))
-
-(define attributes-description
-  '(
-    (kanji . "the kanji itself")
-    (jis . "the 4-byte ASCII representation of the hexadecimal coding of
-the two-byte JIS encoding")
-    (unicode . "the Unicode encoding of the kanji")
-    (radical . "the radical (Bushu) number. As far as possible, this is
-the radical number used in the Nelson \"Modern Japanese-English
-Character Dictionary\" (i.e. the Classic, not the New Nelson)")
-    (historical-radical . "the historical or classical radical number,
-as recorded in the KangXi Zidian")
-    (frequency . "the frequency-of-use ranking. AThe 2,501
-most-used characters have a ranking; those characters that lack this
-field are not ranked. The frequency is a number from 1 to 2,501 that
-expresses the relative frequency of occurrence of a character in modern
-Japanese. The data is based on an analysis of word frequencies in the
-Mainichi Shimbun over 4 years by Alexandre Girardi. From this the
-relative frequencies have been derived. Note:
-a. these frequencies are biassed towards words and kanji used in
-newspaper articles,
-b. the relative frequencies for the last few hundred kanji so graded
-is quite imprecise.")
-    )
-  )
-
-(define info
-  '(
-    unicode
-    radical
-    historical-radical
-    frequency
-    grade
-    jlpt
-    index-halpern
-    index-nelson
-    index-haig
-    index-ajlt
-    index-crowley
-    index-hodges
-    index-kondansha
-    index-henshall-3
-    index-nishiguchi
-    index-learner
-    index-heisig-fr
-    index-oneill
-    index-deroo
-    index-sakade
-    index-kask
-    skip
-    strokes
-    index-spahn-1
-    index-spahn-2
-    four-corner
-    index-morohashi
-    page-morohashi
-    index-henshall
-    index-gakken
-    index-heisig
-    index-oneill-name
-    korean
-    pinyin
-    cross-reference
-    cross-reference-jis-208
-    cross-reference-jis-212
-    cross-reference-jis-213
-    misclassification-pp
-    misclassification-sp
-    misclassification-bp
-    misclassification-rp
-    )
-  )
 
 (define info-predicate 
   '(
@@ -321,17 +135,6 @@ is quite imprecise.")
    info-predicate info-value))
 
 
-(define kanji-entry (make-record-type "kanji-entry" kanji-attributes))
-
-(define new-kanji-entry (record-constructor kanji-entry))
-
-(define kanji (make-procedure-with-setter
-	       (lambda (entry attribute) 
-		 ((record-accessor kanji-entry attribute) entry))
-	       (lambda (entry attribute value)
-		 ((record-modifier kanji-entry attribute) entry value))
-	       ))
-
 (define update-field 
   (lambda (entry field value)
     (match field
@@ -342,11 +145,6 @@ is quite imprecise.")
 	     (set! (kanji entry field) (cons value (kanji entry field))))))
       (else 
        (set! (kanji entry field) value)))))
-
-(define false-kanji 
-  (lambda () 
-    (apply new-kanji-entry 
-	   (map (lambda (field) #f) (record-type-fields kanji-entry)))))
 
 (define block-regexp
   (make-regexp "^\\{([^}]*)\\}")
@@ -393,7 +191,7 @@ is quite imprecise.")
 
 (define kanji-from-kanjidict
   (lambda (line)
-    (let ((default-kanji (false-kanji))
+    (let ((new-kanji (default-kanji))
 	  (cursor '(-1 . -1))
 	  (is_information? #t)
 	  (is_reading? #t)
@@ -401,10 +199,10 @@ is quite imprecise.")
 	  (is_radical? #f)
 	  (has_meaning? #t))
       (set! cursor (get-new-token cursor find-next-token line))
-      (set! (kanji default-kanji 'kanji) 
+      (set! (kanji new-kanji 'kanji) 
 	    (string-ref (read-field line cursor) 0))
       (set! cursor (get-new-token cursor find-next-token line))
-      (set! (kanji default-kanji 'jis) (read-field line cursor))
+      (set! (kanji new-kanji 'jis) (read-field line cursor))
       (set! cursor (get-new-token cursor find-next-token line))
       (while is_information?
 	(let* ((field (read-field line cursor))
@@ -420,22 +218,22 @@ is quite imprecise.")
 			     (regexp-exec (cdr cross-field) info-value) 
 			     1)))
 		      (update-field
-		       default-kanji 
+		       new-kanji 
 		       (car info-field) 
 		       `(,(car cross-field) . ,cross-value)))
-		    (update-field default-kanji (car info-field) info-value))
+		    (update-field new-kanji (car info-field) info-value))
 		(set! cursor (get-new-token cursor find-next-token line))))))
       (while is_reading?
 	(let ((field (read-field line cursor)))
 	  (match field
 	    ((? is-hiragana? _)   
 	     (begin
-	       (update-field default-kanji 'on field)
+	       (update-field new-kanji 'on field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
 	    ((? is-katakana? _)
 	     (begin
-	       (update-field default-kanji 'kun field)
+	       (update-field new-kanji 'kun field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
 	    ("T1" 
@@ -456,7 +254,7 @@ is quite imprecise.")
 	  (match field
 	    ((? is-hiragana? _)   
 	     (begin
-	       (update-field default-kanji 'nanori field)
+	       (update-field new-kanji 'nanori field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
 	    ("T2"
@@ -471,19 +269,19 @@ is quite imprecise.")
 	(let ((field (read-field line cursor)))
 	  (if (or (is-hiragana? field) (is-katakana? field))
 	      (begin
-		(update-field default-kanji 'radical-name field)
+		(update-field new-kanji 'radical-name field)
 		(set! cursor (get-new-token cursor find-next-token
 					    line)))
 	      (set! is_radical? #f))))
       (while has_meaning?
 	(let* ((field (read-field line cursor))
 	       (block (regexp-exec block-regexp field)))
-	  (update-field default-kanji 'english (match:substring block 1))
+	  (update-field new-kanji 'english (match:substring block 1))
 	  (set! cursor (get-new-token cursor find-next-token
 				      line))
 	  (if (not cursor)
 	      (set! has_meaning? #f))))
-      default-kanji)))
+      new-kanji)))
 
 (define open-dict
   (lambda(file)

@@ -1,4 +1,7 @@
+(use-modules (scm kanjifields))
 (use-modules (scm schanjidic))
+;;(use-modules (scm records))
+(use-modules (scm alists))
 (use-modules (ice-9 match))
 (use-modules (ice-9 rdelim))
 
@@ -9,7 +12,7 @@
      (lambda (port)
        (let ((has-nanori #f)
 	     (has-radical #f))
-	 (for-each 
+	 (for-each
 	  (lambda (field)
 	    (match field
 	      ('kanji
@@ -81,7 +84,7 @@
 			    (string-append (string-join field-value " ") " ") 
 			    port))
 			 (display field-value port)))))))
-	  (record-type-fields kanji-entry)))))))
+	  kanji-attributes))))))
 
 ;; checksum
 (define unbelievable-checksum
@@ -106,9 +109,9 @@
 	(while (not (eof-object? line))
 	  (let* ((entry (string-ref line 0))
 		 (dic_entry (kanji-entry->line (hashq-ref schanjidic entry))))
-	    (display line)(newline)
-	    (display dic_entry)(newline)
-	    (display (compare-entry line dic_entry))(newline)
+;;	    (display line)(newline)
+;;	    (display dic_entry)(newline)
+;;	    (display (compare-entry line dic_entry))(newline)
 	    (set! line (read-line dict))))))))
 
 (test  "/usr/share/edict/kanjidic")
