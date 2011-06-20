@@ -1,0 +1,29 @@
+<html>                                                                  
+  <head>                                                                  
+    <script type="text/javascript" src="jquery.js"></script>          
+    <script type="text/javascript">
+$(document).ready(function() {
+
+  var binary = 'cgi-bin/kanjidic.scm';
+  var current_position = 0;
+
+  $('#input').bind('keyup click focus', function() {
+    var input = document.getElementById('input');
+    if (input.selectionStart != current_position) {
+      current_position = input.selectionStart;
+      if (current_position <= input.value.length - 1) {
+        var elt = input.value.substring(input.selectionStart, input.selectionStart + 1);
+        $.post(binary, {kanji : elt}, function(data) {
+          $('#result').html(data);
+        });
+      }
+    }
+  });
+});
+    </script>                                                               
+  </head>                                                                 
+  <body>
+    <textarea id="input"></textarea>
+    <div id="result"></div>
+   </body>                                                                 
+</html>

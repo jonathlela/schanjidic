@@ -227,12 +227,12 @@
 	  (match field
 	    ((? is-hiragana? _)   
 	     (begin
-	       (update-field new-kanji 'on field)
+	       (update-field new-kanji 'kun field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
 	    ((? is-katakana? _)
 	     (begin
-	       (update-field new-kanji 'kun field)
+	       (update-field new-kanji 'on field)
 	       (set! cursor (get-new-token cursor find-next-token
 					   line))))
 	    ("T1" 
