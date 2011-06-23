@@ -123,24 +123,24 @@
 (define attributes-description
   '(
     (kanji . "the kanji itself")
-    (jis . "the 4-byte ASCII representation of the hexadecimal coding of
-the two-byte JIS encoding")
+    (jis . "the 4-byte ASCII representation of the hexadecimal\
+coding of the two-byte JIS encoding")
     (unicode . "the Unicode encoding of the kanji")
-    (radical . "the radical (Bushu) number. As far as possible, this is
-the radical number used in the Nelson \"Modern Japanese-English
+    (radical . "the radical (Bushu) number. As far as possible, this\
+is the radical number used in the Nelson \"Modern Japanese-English
 Character Dictionary\" (i.e. the Classic, not the New Nelson)")
-    (historical-radical . "the historical or classical radical number,
-as recorded in the KangXi Zidian")
-    (frequency . "the frequency-of-use ranking. AThe 2,501
-most-used characters have a ranking; those characters that lack this
-field are not ranked. The frequency is a number from 1 to 2,501 that
-expresses the relative frequency of occurrence of a character in modern
-Japanese. The data is based on an analysis of word frequencies in the
-Mainichi Shimbun over 4 years by Alexandre Girardi. From this the
-relative frequencies have been derived. Note:
-a. these frequencies are biassed towards words and kanji used in
+    (historical-radical . "the historical or classical radical\
+number, as recorded in the KangXi Zidian")
+    (frequency . "the frequency-of-use ranking. AThe 2,501\
+most-used characters have a ranking; those characters that lack this\
+field are not ranked. The frequency is a number from 1 to 2,501 that\
+expresses the relative frequency of occurrence of a character in\
+modern Japanese. The data is based on an analysis of word\
+frequencies in the Mainichi Shimbun over 4 years by Alexandre\
+Girardi. From this the relative frequencies have been derived. Note:
+a. these frequencies are biassed towards words and kanji used in\
 newspaper articles,
-b. the relative frequencies for the last few hundred kanji so graded
+b. the relative frequencies for the last few hundred kanji so graded\
 is quite imprecise.")
     )
   )
