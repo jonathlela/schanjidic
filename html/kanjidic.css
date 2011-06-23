@@ -1,0 +1,93 @@
+#text {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+    width: 65%;
+}
+
+#input {
+    width:100%;
+    height: 600px;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0px;
+    width: 66%;
+    height: 66px;
+}
+
+#kanji-info {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 0px;
+    width: 32%;
+}
+
+#kanji-info div {
+    padding: 0.2em;
+}
+
+.kanji-field {
+    visibility: hidden;
+}
+
+.kanji-value {
+    font-size: 4em;
+    font-family: serif;
+    text-align: center;
+}
+
+.unicode-value, .jis-value, .radical-value, .historical-radical-value,
+.frequency-value, .grade-value, .jlpt-value, .index-halpern-value,
+.index-nelson-value, .index-haig-value index-ajlt-value, .index-crowley-value,
+.index-hodges-value, .index-kondansha-value, .index-henshall-3-value,
+.index-nishiguchi-value, .index-learner-value, .index-heisig-fr-value,
+.index-oneill-value, .index-deroo-value, .index-sakade-value, .index-kask-value,
+.skip-value, .strokes-value, .index-spahn-1-value, .index-spanhn-2-value,
+.four-corner-value, .index-morohashi-value, .index-henshall-value,
+.index-index-gakken-value, .index-heisig-value, .index-oneill-name-value,
+.cross-reference-jis-208-value, .cross-reference-jis-212-value,
+.cross-reference-jis-213-value, .misclassification-pp-value,
+.misclassification-sp-value, .misclassification-bp-value,
+.misclassification-rp-value {
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.on-value, .kun-value, .radical-name-value {
+    font-family: sans;
+}
+
+.strokes-value ul li, .four-corner-value ul li, .index-oneill-name-value ul li,
+.korean-value ul li,.pinyin-value ul li, .cross-reference-jis-208-value ul li,
+.cross-reference-212-value ul li, .cross-reference-213-value ul li,
+.misclassification-pp-value ul li, .misclassification-sp-value ul li,
+.misclassification-bp-value ul li, .misclassification-rp-value ul li,
+.on-value ul li, .kun-value ul li, .nanori-value ul li, 
+.radical-name-value ul li, .english-value ul li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 1em;
+}
+
+.strokes-value ul , .four-corner-value ul , .index-oneill-name-value ul ,
+.korean-value ul ,.pinyin-value ul , .cross-reference-jis-208-value ul ,
+.cross-reference-212-value ul , .cross-reference-213-value ul ,
+.misclassification-pp-value ul , .misclassification-sp-value ul ,
+.misclassification-bp-value ul , .misclassification-rp-value ul ,
+.on-value ul , .kun-value ul , .nanori-value ul , .radical-name-value ul ,
+.english-value ul {
+    display: inline;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+
+.indexes ul, .crossreference ul, .misclassification ul {
+    list-style-type: square;
+    padding-left: 1em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}

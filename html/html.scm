@@ -28,7 +28,7 @@
     (unicode . "Unicode : ")
     (radical . "Radical Number : ")
     (historical-radical . "Historical Radical Number : ")
-    (frequency . "Frequency :")
+    (frequency . "Frequency : ")
     (grade . "Grade : ")
     (jlpt . "JLPT : ")
     (index-halpern . "New Japanese-English Character Dictionary : ")
@@ -71,7 +71,7 @@
     (kun . "kun : ")
     (nanori . "Nanori : ")
     (radical-name . "Radical Name : ")
-    (english . "Meaning : ")
+    (english . "Meanings : ")
     )
 )
 
@@ -154,7 +154,7 @@
 	       (ul 
 		  ,(map 
 		    (lambda (elt)
-		      `(li (div ,(simple-format #f "~A" elt))))
+		      `(li (span ,(simple-format #f "~A" elt))))
 		    field-value))))))
 
 (define attributes-procedure
@@ -274,6 +274,4 @@
 			 misclassification-bp
 			 misclassification-sp
 			 misclassification-rp)))))))))))
-
-
 (newline)

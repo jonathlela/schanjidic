@@ -1,5 +1,6 @@
 <html>                                                                  
-  <head>                                                                  
+  <head>             
+    <link rel="stylesheet" type="text/css" href="kanjidic.css" />                                    
     <script type="text/javascript" src="jquery.js"></script>          
     <script type="text/javascript">
 $(document).ready(function() {
@@ -14,8 +15,10 @@ $(document).ready(function() {
       if (current_position <= input.value.length - 1) {
         var elt = input.value.substring(input.selectionStart, input.selectionStart + 1);
         $.post(binary, {kanji : elt}, function(data) {
-          $('#result').html(data);
+          $('#kanji-info').html(data);
         });
+      } else {
+        $('#kanji-info').html("");
       }
     }
   });
@@ -23,7 +26,21 @@ $(document).ready(function() {
     </script>                                                               
   </head>                                                                 
   <body>
-    <textarea id="input"></textarea>
-    <div id="result"></div>
+    <div id="text">
+      <p>Type your text :</p>
+      <textarea id="input"></textarea>
+    </div>
+    <div id="kanji-info"></div>
+    <div id="footer">
+      <a href="http://www.debian.org/">
+	<img src="debian_button.png" alt="debian" />
+      </a>
+      <a href="http://www.lighttpd.net/">
+	<img src="lighttpd_button.png" alt="lighttpd" />
+      </a>
+      <a href="http://www.gnu.org/s/guile/">
+	<img src="guile_button.png" alt="guile" />
+      </a>
+    </div>
    </body>                                                                 
 </html>
