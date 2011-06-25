@@ -15,7 +15,7 @@
       (let* ((client-connection (accept s))
 	     (client-details (cdr client-connection))
 	     (client (car client-connection)))
-	(let ((kanji (string-ref (read-line client) 0)))
+	(let ((kanji (substring (read-line client) 0 1)))
 	  (write (look-kanji kanji kanjidic)  client)
 	  (close client))
 	(usleep 10000)))))

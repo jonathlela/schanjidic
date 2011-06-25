@@ -63,7 +63,7 @@
 
 (define attributes-type
   '(
-    (kanji . char)
+    (kanji . string)
     (jis . string)
     (unicode . string)
     (radical . string)
@@ -73,7 +73,7 @@
     (jlpt . string)
     (index-halpern . string)
     (index-nelson . string)
-    (index-haig . string)
+    (index-haig . list)
     (index-ajlt  . string)
     (index-crowley . string)
     (index-hodges . string)

@@ -1,3 +1,72 @@
 = schanjidic
 
-schanjidic is an application to query kanji information from kanjidic written in Guile scheme.
+schanjidic is a collection of scripts to query kanji information from
++kanjidic+ written in scheme.
+
+== Setup
+
+You need http://www.gnu.org/s/guile/[guile 2.0] and a copy of
+http://www.csse.monash.edu.au/~jwb/kanjidic.html[kanjidic] to run
+these scripts.
+
+== Files
+
+* +/+
+** +alist.scm+ : the data structure used to represent the information
+about a kanji.
+** +kanjifields.scm+ : holds informations about the fields of
++kanjidic+.
+** +schanjidic.scm+ : builds a internal representation of a +kanjidic+
+file.
+** +test.scm+ : checks that the built representation of +kanjidic+ is
+correct.
+** +daemon.scm+ : a server that handles kanji queries.
+* +/html/+
+** +html.scm+ : a web client for schanjidic.
+** +kanjidic.html+ : a webpage that uses the web client to dynamicly
+display kanji informations (needs http://jquery.com/[jquery]).
+** +html/kanjidic.css+ : a css file for this webpage.
+
+== Usage
+
+schanjidic comes with three main scripts :
+
+=== +daemon.scm+
+
+This is is the main script of schanjidic, it runs as a sever that
+retrieves the kanji informations queried by the clients. Theses
+informations are returned as +s-expressions+ that can be directly
+evaluated by lips-family languages, or easyly parsed by the others.
+
+For example, if you are at the root of the schanjidic directory, you
+can launch the daemon as follow :
+
+--------------------------------------
+schanjidic$ guile -L . daemon.scm /usr/share/edict/kanjidic&
+--------------------------------------
+
+=== +html.scm+
+
+This script is a web client for schanjidic, it takes a single URI
+parameter from the standard input and returns an +HTML+ output that
+contains the information from the queried kanji. Example with +齒+ :
+ 
+--------------------------------------
+schanjidic$ guile html/html.scm < echo "kanji=%E9%BD%92"
+-------------------------------------- 
+
+A running webpage using this client can be found at
+http://azubato.net/kanjidic.html.
+
+=== +test.scm+
+
+This script checks if the dictionnay built by schanjidic matches with
+the kanjidic file provided :
+
+--------------------------------------
+schanjidic$ guile -L . test.scm /usr/share/edict/kanjidic
+--------------------------------------
+
+== To come
+
+An +elisp+ client to use schanjidic within +emacs+.

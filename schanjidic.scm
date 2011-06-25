@@ -138,10 +138,9 @@
   (lambda (entry field value)
     (match field
       ((? (lambda (symbol) (member symbol list-attributes)) _)
-       (begin
 	 (if (not (kanji entry field))
 	     (set! (kanji entry field) (list value))
-	     (set! (kanji entry field) (cons value (kanji entry field))))))
+	     (set! (kanji entry field) (append (kanji entry field) (list value)))))
       (else 
        (set! (kanji entry field) value)))))
 
@@ -199,7 +198,7 @@
 	  (has_meaning? #t))
       (set! cursor (get-new-token cursor find-next-token line))
       (set! (kanji new-kanji 'kanji) 
-	    (string-ref (read-field line cursor) 0))
+	    (read-field line cursor))
       (set! cursor (get-new-token cursor find-next-token line))
       (set! (kanji new-kanji 'jis) (read-field line cursor))
       (set! cursor (get-new-token cursor find-next-token line))
@@ -296,10 +295,10 @@
       (let ((line (read-line dict)))
 	(while (not (eof-object? line))
 	  (let ((entry (kanji-from-kanjidict line)))
-	    (hashq-create-handle! kanjidic (kanji entry 'kanji) entry)
+	    (hash-create-handle! kanjidic (kanji entry 'kanji) entry)
 	    (set! line (read-line dict)))))
       kanjidic)))
 
 (define look-kanji
   (lambda (entry kanjidic)
-    (hashq-ref kanjidic entry)))
+    (hash-ref kanjidic entry)))

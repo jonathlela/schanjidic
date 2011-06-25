@@ -87,7 +87,7 @@
     (jlpt . string)
     (index-halpern . string)
     (index-nelson . string)
-    (index-haig . string)
+    (index-haig . list)
     (index-ajlt  . string)
     (index-crowley . string)
     (index-hodges . string)
@@ -129,9 +129,9 @@
     )
   )
 
-(define field->sxml
-  (lambda (str field field-value)
-    `(div (@ (class ,(symbol->string field)))
+(define div->sxml
+  (lambda (str field field-value-sxml)
+       `(div (@ (class ,(symbol->string field)))
 	  (span (@ (class ,(string-append
 			(symbol->string field) 
 			"-field")))
@@ -139,48 +139,38 @@
 	  (span (@ (class ,(string-append
 			(symbol->string field) 
 			"-value")))
-	       ,(simple-format #f "~A" field-value)))))
+		,field-value-sxml))))
+
+(define field->sxml
+  (lambda (str field field-value)
+    (div->sxml str field (simple-format #f "~A" field-value))))
 
 (define field-list->sxml
   (lambda (str field field-value)
-    `(div (@ (class ,(symbol->string field)))
-	  (span (@ (class ,(string-append
-			(symbol->string field) 
-			"-field")))
-	       ,str)
-	  (span (@ (class ,(string-append
-			(symbol->string field) 
-			"-value")))
-	       (ul 
-		  ,(map 
-		    (lambda (elt)
-		      `(li (span ,(simple-format #f "~A" elt))))
-		    field-value))))))
+    (div->sxml str field
+	      `(ul 
+		,(map 
+		  (lambda (elt)
+		    `(li (span ,(simple-format #f "~A" elt))))
+		  field-value)))))
 
 (define attributes-procedure
   (lambda (str field field-value) 
     (match field
       ('cross-reference 
-       `(div (@ (class ,(symbol->string field)))
-	     (span (@ (class ,(string-append
-			       (symbol->string field) 
-			       "-field")))
-		   ,str)
-	     (span (@ (class ,(string-append
-			       (symbol->string field) 
-			       "-value")))
-		   (ul 
+       (div->sxml str field
+		  `(ul 
 		    ,(map 
 		      (lambda (elt)
 			(let* ((cross-field (car elt))
 			       (cross-field-str (cdr (assoc cross-field attributes-name)))
 			       (cross-field-value (cdr elt)))
 			  `(li ,(attributes-procedure cross-field-str cross-field cross-field-value))))
-		      field-value)))))
-    ((? (lambda (symbol) (eq? (cdr (assoc symbol attributes-type)) 'string)) _)
-     (field->sxml str field field-value))
-    ((? (lambda (symbol) (eq? (cdr (assoc symbol attributes-type)) 'list)) _)
-     (field-list->sxml str field field-value)))))
+		      field-value))))
+      ((? (lambda (symbol) (eq? (cdr (assoc symbol attributes-type)) 'string)) _)
+       (field->sxml str field field-value))
+      ((? (lambda (symbol) (eq? (cdr (assoc symbol attributes-type)) 'list)) _)
+       (field-list->sxml str field field-value)))))
 
 (define print-field 
   (lambda (field entry)
@@ -193,7 +183,7 @@
   (let ((to-look 
 	 (uri-decode 
 	  (match:substring (string-match "^kanji=(.+)$" input) 1))))
-    (let ((res (get_kanji to-look)))
+    (let ((res (get_kanji to-look))
       (if (not res)
 	  ""
 	  (let ((conditionnal-field-list

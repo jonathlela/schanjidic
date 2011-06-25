@@ -16,7 +16,7 @@
 	  (lambda (field)
 	    (match field
 	      ('kanji
-	       (write-char (kanji curr_kanji field) port)
+	       (display (kanji curr_kanji field) port)
 	       (display " " port))
 	      ('jis
 	       (display (kanji curr_kanji field) port)
@@ -58,6 +58,9 @@
 				 (display " " port))))))))
 	      ('english
 	       (begin
+		 (display field)
+		 (display (kanji curr_kanji field))
+		 (display curr_kanji)
 		 (display 
 		  (string-append 
 		   "{" 
@@ -107,10 +110,9 @@
 	  (schanjidic (make-dict file)))
       (let ((line (read-line dict)))
 	(while (not (eof-object? line))
-	  (let* ((entry (string-ref line 0))
+	  (let* ((entry (substring line 0 1))
 		 (dic_entry (kanji-entry->line (look-kanji entry schanjidic))))
 	    (display line)(newline)
-	    (display (look-kanji entry schanjidic))
 	    (display dic_entry)(newline)
 	    (display (compare-entry line dic_entry))(newline)
 	    (set! line (read-line dict))))))))
